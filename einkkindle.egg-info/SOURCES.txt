@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+einkkindle.egg-info/PKG-INFO
+einkkindle.egg-info/SOURCES.txt
+einkkindle.egg-info/dependency_links.txt
+einkkindle.egg-info/requires.txt
+einkkindle.egg-info/top_level.txt
+server/__init__.py
+server/main.py
+server/renderer/__init__.py
+server/weather/__init__.py
+server/web/__init__.py
+tests/test_smoke.py

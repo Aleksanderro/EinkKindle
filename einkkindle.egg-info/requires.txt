@@ -1,0 +1,9 @@
+fastapi
+httpx
+Pillow
+PyYAML
+uvicorn
+
+[dev]
+pytest
+ruff
