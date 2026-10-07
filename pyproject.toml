@@ -5,6 +5,8 @@ description = "Battery-powered weather dashboard for Kindle 4 Non-Touch"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi",
+    "google-auth",
+    "google-auth-oauthlib",
     "httpx",
     "Pillow",
     "PyYAML",

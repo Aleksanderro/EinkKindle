@@ -1,5 +1,25 @@
 # EinkKindle Weather + Calendar Dashboard
 
+## Local Google Calendar OAuth
+
+Create a Google Cloud OAuth client of type **Desktop app** with the Google Calendar API enabled and
+download its client credentials JSON. Copy `config/config.example.yaml` to the ignored
+`config/config.yaml`, then place the downloaded file at
+`config/local/google-oauth-client.json`. The refreshable token is written to the ignored
+`config/local/google-calendar-token.json`.
+
+Run the one-time browser login:
+
+```powershell
+python -m server.calendar.google_oauth_login --config config/config.yaml
+```
+
+Run the live normalized-calendar smoke test:
+
+```powershell
+python -m server.calendar.google_calendar_live_smoke --config config/config.yaml
+```
+
 Bateryjny dashboard pogody i kalendarza dla Kindle 4 Non-Touch.
 
 Urządzeniem docelowym jest Kindle 4 z firmware 4.1.2 i ekranem o rozdzielczości 600 × 800 pikseli.

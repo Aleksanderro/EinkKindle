@@ -8,8 +8,12 @@ weather:
   provider: "open-meteo"
 
 calendar:
+  provider: "google"
   view: current_week
   week_start: monday
+  calendar_id: "primary"
+  oauth_client_credentials_path: "config/local/google-oauth-client.json"
+  token_store_path: "config/local/google-calendar-token.json"
 
 display:
   width: 600
