@@ -7,6 +7,10 @@ location:
 weather:
   provider: "open-meteo"
 
+calendar:
+  view: current_week
+  week_start: monday
+
 display:
   width: 600
   height: 800
