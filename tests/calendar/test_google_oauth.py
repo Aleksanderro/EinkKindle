@@ -42,7 +42,7 @@ class FakeOAuthBackend:
         )
 
     def load(self, path: Path, scopes: tuple[str, ...]) -> FakeCredentials:
-        assert path == Path("config/local/token.json")
+        assert path == Path("C:/path/outside/workspace/token.json")
         assert scopes == GOOGLE_CALENDAR_SCOPES
         return self.credentials
 
@@ -78,7 +78,7 @@ def test_refreshes_expired_token_and_persists_credentials() -> None:
 
     assert token == "refreshed-access-token"
     assert fake.refresh_calls == 1
-    assert fake.saved == [(credentials, Path("config/local/token.json"))]
+    assert fake.saved == [(credentials, Path("C:/path/outside/workspace/token.json"))]
 
 
 def test_missing_token_requires_one_time_login() -> None:
@@ -98,8 +98,10 @@ def test_login_requests_readonly_scope_and_saves_refreshable_credentials() -> No
     token = GoogleOAuthManager(_config(), backend=fake.as_backend()).login()
 
     assert token == "new-access-token"
-    assert fake.flow_calls == [(Path("config/local/client.json"), GOOGLE_CALENDAR_SCOPES)]
-    assert fake.saved == [(credentials, Path("config/local/token.json"))]
+    assert fake.flow_calls == [
+        (Path("C:/path/outside/workspace/client.json"), GOOGLE_CALENDAR_SCOPES)
+    ]
+    assert fake.saved == [(credentials, Path("C:/path/outside/workspace/token.json"))]
 
 
 def test_login_rejects_credentials_without_refresh_token() -> None:
@@ -118,16 +120,24 @@ def test_unrefreshable_stored_credentials_require_login() -> None:
         GoogleOAuthManager(_config(), backend=fake.as_backend()).get_access_token()
 
 
-def test_example_config_points_to_ignored_local_oauth_files() -> None:
+def test_example_config_points_to_external_oauth_files() -> None:
     config = load_google_oauth_config("config/config.example.yaml")
 
-    assert config.client_credentials_path == Path("config/local/google-oauth-client.json")
-    assert config.token_store_path == Path("config/local/google-calendar-token.json")
+    assert config.oauth_client_file == Path("C:/path/outside/workspace/google-oauth-client.json")
+    assert config.token_file == Path("C:/path/outside/workspace/google-calendar-token.json")
     assert config.calendar_id == "primary"
+
+
+def test_config_rejects_secret_paths_inside_workspace() -> None:
+    with pytest.raises(ValueError, match="outside the project workspace"):
+        GoogleOAuthConfig(
+            oauth_client_file=Path("config/client.json"),
+            token_file=Path("config/token.json"),
+        )
 
 
 def _config() -> GoogleOAuthConfig:
     return GoogleOAuthConfig(
-        client_credentials_path=Path("config/local/client.json"),
-        token_store_path=Path("config/local/token.json"),
+        oauth_client_file=Path("C:/path/outside/workspace/client.json"),
+        token_file=Path("C:/path/outside/workspace/token.json"),
     )

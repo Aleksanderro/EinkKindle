@@ -13,7 +13,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     args = parser.parse_args(argv)
     config = load_google_oauth_config(args.config)
     GoogleOAuthManager(config).login()
-    print(f"OAuth login complete. Token stored at {config.token_store_path}")
+    print(f"OAuth login complete. Token stored at {config.token_file}")
 
 
 if __name__ == "__main__":

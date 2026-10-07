@@ -9,9 +9,9 @@ __pycache__/
 # Local configuration
 .env
 config/config.yaml
-config/local/
 config/*oauth*.json
 config/*token*.json
+config/*client_secret*.json
 
 # Generated output
 output/*

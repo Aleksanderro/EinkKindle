@@ -1,5 +1,6 @@
 """Local OAuth lifecycle for read-only Google Calendar access."""
 
+import os
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
@@ -23,13 +24,15 @@ class GoogleOAuthAuthorizationRequired(GoogleOAuthError):
 class GoogleOAuthConfig:
     """Local paths and calendar selection required by Google OAuth tooling."""
 
-    client_credentials_path: Path
-    token_store_path: Path
+    oauth_client_file: Path
+    token_file: Path
     calendar_id: str = "primary"
 
     def __post_init__(self) -> None:
         if not self.calendar_id:
             raise ValueError("calendar_id must not be empty")
+        _require_external_path(self.oauth_client_file, "oauth_client_file")
+        _require_external_path(self.token_file, "token_file")
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,17 +61,17 @@ class GoogleOAuthManager:
 
     def login(self) -> str:
         """Run the one-time browser flow, persist credentials, and return an access token."""
-        client_path = self._config.client_credentials_path
+        client_path = self._config.oauth_client_file
         if not self._backend.client_credentials_exist(client_path):
             raise GoogleOAuthError(f"OAuth client credentials not found: {client_path}")
         credentials = self._backend.run_installed_app_flow(client_path, GOOGLE_CALENDAR_SCOPES)
         token = _validated_token(credentials, require_refresh_token=True)
-        self._backend.save_credentials(credentials, self._config.token_store_path)
+        self._backend.save_credentials(credentials, self._config.token_file)
         return token
 
     def get_access_token(self) -> str:
         """Return a valid token, refreshing and persisting it when necessary."""
-        token_path = self._config.token_store_path
+        token_path = self._config.token_file
         if not self._backend.token_exists(token_path):
             raise GoogleOAuthAuthorizationRequired(
                 "OAuth token store not found; run the Google OAuth login command first"
@@ -99,14 +102,21 @@ def load_google_oauth_config(config_path: str | Path) -> GoogleOAuthConfig:
     root = _mapping(raw_config, "config")
     calendar = _mapping(root.get("calendar"), "calendar")
     client_path = _non_empty_string(
-        calendar.get("oauth_client_credentials_path"),
-        "calendar.oauth_client_credentials_path",
+        calendar.get("oauth_client_file"),
+        "calendar.oauth_client_file",
     )
-    token_path = _non_empty_string(calendar.get("token_store_path"), "calendar.token_store_path")
+    token_path = _non_empty_string(calendar.get("token_file"), "calendar.token_file")
     calendar_id = calendar.get("calendar_id", "primary")
     if not isinstance(calendar_id, str) or not calendar_id:
         raise GoogleOAuthError("calendar.calendar_id must be a non-empty string")
     return GoogleOAuthConfig(Path(client_path), Path(token_path), calendar_id)
+
+
+def _require_external_path(path: Path, field_name: str) -> None:
+    workspace = Path(__file__).parents[2].absolute()
+    absolute_path = Path(os.path.abspath(path))
+    if absolute_path == workspace or workspace in absolute_path.parents:
+        raise ValueError(f"{field_name} must point outside the project workspace")
 
 
 def _validated_token(credentials: Any, *, require_refresh_token: bool = False) -> str:

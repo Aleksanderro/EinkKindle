@@ -2,11 +2,15 @@
 
 ## Local Google Calendar OAuth
 
-Create a Google Cloud OAuth client of type **Desktop app** with the Google Calendar API enabled and
-download its client credentials JSON. Copy `config/config.example.yaml` to the ignored
-`config/config.yaml`, then place the downloaded file at
-`config/local/google-oauth-client.json`. The refreshable token is written to the ignored
-`config/local/google-calendar-token.json`.
+1. Copy `config/config.example.yaml` to the ignored `config/config.yaml`.
+2. In Google Cloud, enable Google Calendar API, create an OAuth client of type **Desktop app**, and
+   download its client credentials JSON to a location outside this repository and workspace.
+3. Choose a second JSON path outside the repository and workspace for the generated token store. Set
+   both external paths in the local `config/config.yaml` under `calendar.oauth_client_file` and
+   `calendar.token_file`. The application never copies either file into the project.
+4. Run the one-time browser login shown below. It creates the token store at the configured external
+   path and stores the refresh token there.
+5. Run the live normalized-calendar smoke test shown below.
 
 Run the one-time browser login:
 

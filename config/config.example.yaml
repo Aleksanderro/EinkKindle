@@ -12,8 +12,8 @@ calendar:
   view: current_week
   week_start: monday
   calendar_id: "primary"
-  oauth_client_credentials_path: "config/local/google-oauth-client.json"
-  token_store_path: "config/local/google-calendar-token.json"
+  oauth_client_file: "C:/path/outside/workspace/google-oauth-client.json"
+  token_file: "C:/path/outside/workspace/google-calendar-token.json"
 
 display:
   width: 600
