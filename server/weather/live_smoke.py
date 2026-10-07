@@ -15,8 +15,8 @@ def format_weather(weather: Weather) -> str:
         f"Location: {weather.location_name}",
         f"Data time: {weather.data_time.isoformat()}",
         "Current weather:",
-        f"  Temperature: {current.temperature_c:.1f} °C",
-        f"  Feels like: {current.apparent_temperature_c:.1f} °C",
+        f"  Temperature: {current.temperature_c:.1f} deg C",
+        f"  Feels like: {current.apparent_temperature_c:.1f} deg C",
         f"  Humidity: {current.relative_humidity_percent}%",
         f"  Wind speed: {current.wind_speed_kmh:.1f} km/h",
         f"  Precipitation probability: {current.precipitation_probability_percent}%",
@@ -26,8 +26,8 @@ def format_weather(weather: Weather) -> str:
     for day in weather.daily_forecast:
         lines.append(
             f"  {day.date.isoformat()}: "
-            f"min {day.temperature_min_c:.1f} °C, "
-            f"max {day.temperature_max_c:.1f} °C, "
+            f"min {day.temperature_min_c:.1f} deg C, "
+            f"max {day.temperature_max_c:.1f} deg C, "
             f"precipitation {day.precipitation_probability_max_percent}%, "
             f"code {day.weather_code}"
         )
@@ -35,9 +35,9 @@ def format_weather(weather: Weather) -> str:
 
 
 def main() -> None:
-    """Fetch and print one live weather snapshot for Poznań."""
+    """Fetch and print one live weather snapshot for Poznan."""
     client = OpenMeteoClient(
-        location_name="Poznań",
+        location_name="Pozna\u0144",
         latitude=52.4064,
         longitude=16.9252,
         timezone_name="Europe/Warsaw",
